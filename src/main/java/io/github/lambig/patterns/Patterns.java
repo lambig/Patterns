@@ -1,6 +1,5 @@
 package io.github.lambig.patterns;
 
-import io.github.lambig.funcifextension.predicate.Predicates;
 import io.github.lambig.tuplite._2.Tuple2;
 import java.util.List;
 import java.util.Objects;
