@@ -1,6 +1,7 @@
 package io.github.lambig.patterns;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.UnaryOperator;
 import java.util.stream.Stream;
@@ -85,8 +86,9 @@ class PatternsTest {
       //SetUp
       UnaryOperator<Integer> add1 = i -> i + 1;
 
-      Patterns<Integer, String> target =
+      var target =
           patterns(
+              when(Objects::isNull, then("b")),
               when(equalsTo(3), then("b")),
               when(i -> i > 0, thenApply(Object::toString)),
               when(i -> i < 0, thenApply(compositionOf(Object::toString, i -> i, add1))),
@@ -130,6 +132,7 @@ class PatternsTest {
           patterns(
               whenMatch(B.class, thenApply(b -> "it's a B. value: " + b.value() + ".")),
               whenMatch(C.class, thenApply(C::say)),
+              whenMatch(C.class, Objects::isNull, thenApply(C::say)),
               orElse(then("it's a plain A.")));
 
       //Exercise
