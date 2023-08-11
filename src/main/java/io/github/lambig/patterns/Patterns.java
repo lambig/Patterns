@@ -75,6 +75,7 @@ public class Patterns<K, V> implements Function<K, V> {
 
     /**
      * キーを、値の代わりに「値のOptional」にmapするFunctionを返します。
+     *
      * @return このPatternをOptionallyにmapするFunction
      */
     public Function<K, Optional<V>> optional() {
@@ -109,7 +110,7 @@ public class Patterns<K, V> implements Function<K, V> {
      * @param <O>      値型
      * @return パターンに設定する返却関数
      */
-    public static <S, O> Function<S, O> thenSupply(Supplier<O> supplier) {
+    public static <S, O> Function<S, O> thenSupply(Supplier<? extends O> supplier) {
         return anything -> supplier.get();
     }
 
@@ -122,8 +123,8 @@ public class Patterns<K, V> implements Function<K, V> {
      * @param <O>      関数の戻り型
      * @return パターンに設定する返却関数
      */
-    public static <S, O> Function<S, O> thenApply(Function<S, O> function) {
-        return function;
+    public static <S, O> Function<S, O> thenApply(Function<? super S, ? extends O> function) {
+        return function::apply;
     }
 
     /**
@@ -135,8 +136,8 @@ public class Patterns<K, V> implements Function<K, V> {
      * @param <O>       関数の戻り型
      * @return パターン
      */
-    public static <S, O> Tuple2<Predicate<S>, Function<S, O>> when(Predicate<S> when, Function<S, O> thenApply) {
-        return tuple(when, thenApply);
+    public static <S, O> Tuple2<Predicate<S>, Function<S, O>> when(Predicate<? super S> when, Function<? super S, ? extends O> thenApply) {
+        return tuple(when::test, thenApply::apply);
     }
 
     /**
@@ -159,8 +160,8 @@ public class Patterns<K, V> implements Function<K, V> {
      * @param <O>       関数の戻り型
      * @return デフォルトパターン
      */
-    public static <S, O> Tuple2<Predicate<S>, Function<S, O>> orElse(Function<S, O> thenApply) {
-        return tuple(anything -> true, thenApply);
+    public static <S, O> Tuple2<Predicate<S>, Function<S, O>> orElse(Function<? super S, ? extends O> thenApply) {
+        return tuple(anything -> true, thenApply::apply);
     }
 
     /**
@@ -172,7 +173,7 @@ public class Patterns<K, V> implements Function<K, V> {
      * @param <O>       関数の戻り型
      * @return 例外処理送出処理
      */
-    public static <S, O> Tuple2<Predicate<S>, Function<S, O>> orElseThrow(Function<S, RuntimeException> thenApply) {
+    public static <S, O> Tuple2<Predicate<S>, Function<S, O>> orElseThrow(Function<? super S, RuntimeException> thenApply) {
         return tuple(anything -> true, input -> {
             throw thenApply.apply(input);
         });
@@ -187,9 +188,24 @@ public class Patterns<K, V> implements Function<K, V> {
      * @param <O>       関数の戻り型
      * @return パターン
      */
-    public static <S, T extends S, O> Tuple2<Predicate<S>, Function<S, O>> whenMatch(Class<T> clazz, Function<T, O> thenApply) {
+    public static <S, T extends S, O> Tuple2<Predicate<S>, Function<S, O>> whenMatch(Class<T> clazz, Function<? super T, ? extends O> thenApply) {
         return tuple(clazz::isInstance, instance -> thenApply.apply(clazz.cast(instance)));
     }
+
+    /**
+     * クラスによるパターンマッチを定義します。当該クラスのインスタンスとしたうえで満たすべき述語を定義できます。
+     *
+     * @param clazz     キーがこのパターンに該当する条件となるクラス
+     * @param when      上記クラスかつ満たすべき条件
+     * @param thenApply キーがこのパターンに該当する場合、clazzクラスにキャストしたキーに適用する関数
+     * @param <S>       キー型
+     * @param <O>       関数の戻り型
+     * @return パターン
+     */
+    public static <S, T extends S, O> Tuple2<Predicate<S>, Function<S, O>> whenMatch(Class<T> clazz, Predicate<? super T> when, Function<? super T, ? extends O> thenApply) {
+        return tuple(key -> clazz.isInstance(key) && when.test(clazz.cast(key)), instance -> thenApply.apply(clazz.cast(instance)));
+    }
+
 
     @StandardException
     public static class NoSuchPatternException extends RuntimeException {
