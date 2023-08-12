@@ -65,7 +65,7 @@ publishing {
             from components.java
             pom {
                 name = 'Patterns'
-                description = 'easy union-like class implementation'
+                description = 'easy implementation of pattern-matcher works as a function'
                 url = 'https://github.com/lambig/Patterns'
                 licenses {
                     license {
