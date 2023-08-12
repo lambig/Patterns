@@ -8,7 +8,7 @@ group = 'io.github.lambig'
 archivesBaseName = 'Patterns'
 version = '1.2.0'
 
-sourceCompatibility = 1.17
+sourceCompatibility = 1.11
 
 repositories {
     mavenCentral()
@@ -65,7 +65,7 @@ publishing {
             from components.java
             pom {
                 name = 'Patterns'
-                description = 'easy union-like class implementation'
+                description = 'easy implementation of pattern-matcher works as a function'
                 url = 'https://github.com/lambig/Patterns'
                 licenses {
                     license {
@@ -88,14 +88,14 @@ publishing {
         }
     }
     repositories {
-        maven {
-            name = "OSSRH"
-            url = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
-            credentials {
-                username = ossrhUsername
-                password = ossrhPassword
-            }
-        }
+//        maven {
+//            name = "OSSRH"
+//            url = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
+//            credentials {
+//                username = ossrhUsername
+//                password = ossrhPassword
+//            }
+//        }
 //        maven {
 //            name = "OSSRH_SNAPSHOT"
 //            url = "https://s01.oss.sonatype.org/content/repositories/snapshots/"
