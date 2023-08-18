@@ -1,8 +1,12 @@
 package io.github.lambig.patterns;
 
+import io.github.lambig.tuplite._2.Tuple2;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.function.UnaryOperator;
 import java.util.stream.Stream;
 import lombok.Getter;
@@ -24,6 +28,7 @@ import static io.github.lambig.patterns.Patterns.whenMatch;
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
 @SuppressWarnings("NonAsciiCharacters")
 class PatternsTest {
 
@@ -303,4 +308,45 @@ class PatternsTest {
                     .hasMessage("予定通り");
         }
     }
+
+    @Nested
+    class 設定と取得のテスト_クラス名修飾付きコンストラクタ {
+        @Test
+        void 該当キーに対応する値または適用結果_またはデフォルト値が取得できること() {
+            //SetUp
+            Patterns<Integer, String> target =
+                    Patterns.of(
+                            when(equalsTo(3), then("b")),
+                            when(equalsTo(4), thenSupply(() -> "c")),
+                            when(i -> i > 0, thenApply(Object::toString)),
+                            when(i -> i < 0, thenApply(sequenceOf((UnaryOperator<Integer>) i -> i + 1, Number::longValue, Object::toString))));
+
+            //Exercise
+            var actual = Stream.of(-1, 0, 1, 2, 3, 4).map(target.orElseGet(() -> "x")).collect(toList());
+            //Verify
+            assertThat(actual).containsExactly("0", "x", "1", "2", "b", "c");
+        }
+    }
+
+    @Nested
+    class 破壊テスト {
+        @Test
+        void 実引数の操作によりPatternsが破壊されること() {
+            //SetUp
+            var list = new ArrayList<>(
+                    List.<Tuple2<Predicate<Integer>, Function<Integer, String>>>of(
+                            when(equalsTo(3), then("b")), // このパターンが消されてしまうので
+                            when(equalsTo(4), thenSupply(() -> "c")),
+                            when(i -> i > 0, thenApply(Object::toString)), // 3はこちらで処理されるようになる
+                            when(i -> i < 0, thenApply(sequenceOf((UnaryOperator<Integer>) i -> i + 1, Number::longValue, Object::toString)))));
+            Patterns<Integer, String> target = Patterns.of(list);
+            list.remove(0);
+
+            //Exercise
+            var actual = Stream.of(-1, 0, 1, 2, 3, 4).map(target.orElseGet(() -> "x")).collect(toList());
+            //Verify
+            assertThat(actual).containsExactly("0", "x", "1", "2", "3", "c");
+        }
+    }
+
 }
