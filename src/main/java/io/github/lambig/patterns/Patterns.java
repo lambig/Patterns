@@ -51,10 +51,10 @@ public class Patterns<K, V> implements Function<K, V> {
         var pattern = this.mappings.stream()
                 .filter(entry -> entry._1().test(key))
                 .findFirst()
-                .orElseThrow(() -> new NoSuchPatternException("for key: " + key + ". To allow this pattern to return nullable value, consider using Patterns#getOptionally."));
+                .orElseThrow(() -> new NoSuchPatternException("for key: " + key + ". To allow this pattern to return nullable value, consider using Patterns#getOptionally or so."));
 
         return Optional.ofNullable(pattern._2().apply(key))
-                .orElseThrow(() -> new NullPointerException("Pattern computed null result. To allow this pattern to return nullable value, consider using Patterns#getOptionally."));
+                .orElseThrow(() -> new NullPointerException("Pattern computed null result. To allow this pattern to return nullable value, consider using Patterns#getOptionally or so."));
     }
 
     /**
@@ -76,10 +76,41 @@ public class Patterns<K, V> implements Function<K, V> {
     /**
      * キーを、値の代わりに「値のOptional」にmapするFunctionを返します。
      *
-     * @return このPatternをOptionallyにmapするFunction
+     * @return このPatternでOptionallyにmapするFunction
      */
     public Function<K, Optional<V>> optional() {
         return this::getOptionally;
+    }
+
+
+    /**
+     * キーを値またはデフォルト値にmapするFunctionを返します。
+     *
+     * @param defaultValue デフォルト値
+     * @return このPatternでデフォルト値付きでmapするFunction
+     */
+    public Function<K, V> orElse(V defaultValue) {
+        return this.optional().andThen(optional -> optional.orElse(defaultValue));
+    }
+
+    /**
+     * キーを値またはデフォルト値にmapするFunctionを返します。
+     *
+     * @param defaultValueSupplier デフォルト値のSupplier
+     * @return このPatternでデフォルト値付きでmapするFunction
+     */
+    public Function<K, V> orElseGet(Supplier<V> defaultValueSupplier) {
+        return this.optional().andThen(optional -> optional.orElseGet(defaultValueSupplier));
+    }
+
+    /**
+     * キーを値にmapし、キーが未設定の場合例外を送出するFunctionを返します。
+     *
+     * @param exceptionSupplier 指定例外のSupplier
+     * @return このPatternでmapするFunction Functionはキーが未設定の場合指定例外を送出する
+     */
+    public Function<K, V> orElseThrow(Supplier<RuntimeException> exceptionSupplier) {
+        return this.optional().andThen(optional -> optional.orElseThrow(exceptionSupplier));
     }
 
     @Override
