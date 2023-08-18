@@ -29,11 +29,52 @@ public class Patterns<K, V> implements Function<K, V> {
         this.mappings = patterns;
     }
 
+    /**
+     * パターンを宣言します。
+     *
+     * @param patterns 宣言する各パターン
+     * @param <S>      入力型
+     * @param <O>      出力型
+     * @return パターンによるマッピング
+     */
+    @SafeVarargs
+    public static <S, O> Patterns<S, O> of(Tuple2<Predicate<S>, Function<S, O>>... patterns) {
+        return patterns(patterns);
+    }
+
+    /**
+     * パターンを宣言します。
+     *
+     * @param patterns 宣言する各パターン
+     * @param <S>      入力型
+     * @param <O>      出力型
+     * @return パターンによるマッピング
+     */
+    public static <S, O> Patterns<S, O> of(List<Tuple2<Predicate<S>, Function<S, O>>> patterns) {
+        return patterns(patterns);
+    }
+
+    /**
+     * パターンを宣言します。
+     *
+     * @param patterns 宣言する各パターン
+     * @param <S>      入力型
+     * @param <O>      出力型
+     * @return パターンによるマッピング
+     */
     @SafeVarargs
     public static <S, O> Patterns<S, O> patterns(Tuple2<Predicate<S>, Function<S, O>>... patterns) {
         return patterns(Stream.of(patterns).collect(toList()));
     }
 
+    /**
+     * パターンを宣言します。
+     *
+     * @param patterns 宣言する各パターン
+     * @param <S>      入力型
+     * @param <O>      出力型
+     * @return パターンによるマッピング
+     */
     public static <S, O> Patterns<S, O> patterns(List<Tuple2<Predicate<S>, Function<S, O>>> patterns) {
         return new Patterns<>(patterns);
     }
