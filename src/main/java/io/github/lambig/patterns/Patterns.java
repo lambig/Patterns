@@ -278,10 +278,5 @@ public class Patterns<K, V> implements Function<K, V> {
         return tuple(key -> clazz.isInstance(key) && when.test(clazz.cast(key)), instance -> thenApply.apply(clazz.cast(instance)));
     }
 
-
-    @StandardException
-    public static class NoSuchPatternException extends RuntimeException {
-    }
-
 }
 

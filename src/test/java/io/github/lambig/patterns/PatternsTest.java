@@ -65,7 +65,7 @@ class PatternsTest {
             var actual = assertThatThrownBy(() -> Stream.of(-1, 0, 1, 2, 3).map(target).collect(toList()));
             //Verify
             actual
-                    .isInstanceOf(Patterns.NoSuchPatternException.class)
+                    .isInstanceOf(NoSuchPatternException.class)
                     .extracting("message")
                     .isEqualTo("for key: 0. To allow this pattern to return nullable value, consider using Patterns#getOptionally or so.");
         }
