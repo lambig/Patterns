@@ -1,6 +1,8 @@
 package io.github.lambig.patterns;
 
 import io.github.lambig.tuplite._2.Tuple2;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -76,7 +78,7 @@ public class Patterns<K, V> implements Function<K, V> {
      * @return パターンによるマッピング
      */
     public static <S, O> Patterns<S, O> patterns(List<Tuple2<Predicate<S>, Function<S, O>>> patterns) {
-        return new Patterns<>(patterns);
+        return new Patterns<>(new ArrayList<>(patterns));
     }
 
     /**
