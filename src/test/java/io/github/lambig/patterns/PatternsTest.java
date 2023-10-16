@@ -331,7 +331,7 @@ class PatternsTest {
     @Nested
     class 破壊テスト {
         @Test
-        void 実引数の操作によりPatternsが破壊されること() {
+        void 実引数の操作によりPatternsが破壊されないこと() {
             //SetUp
             var list = new ArrayList<>(
                     List.<Tuple2<Predicate<Integer>, Function<Integer, String>>>of(
@@ -345,7 +345,7 @@ class PatternsTest {
             //Exercise
             var actual = Stream.of(-1, 0, 1, 2, 3, 4).map(target.orElseGet(() -> "x")).collect(toList());
             //Verify
-            assertThat(actual).containsExactly("0", "x", "1", "2", "3", "c");
+            assertThat(actual).containsExactly("0", "x", "1", "2", "b", "c");
         }
     }
 
