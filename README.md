@@ -1,6 +1,6 @@
 [![Build Status](https://travis-ci.com/lambig/Patterns.svg?branch=main)](https://travis-ci.com/lambig/Patterns)
 # Patterns
-easy implementation of pattern-matcher works as a function
+easy implementation of pattern-matcher works as a function  
 Note: this README is written through the help of ChatGPT.  
 
 ## Overview
