@@ -96,14 +96,6 @@ publishing {
 //                password = ossrhPassword
 //            }
 //        }
-//        maven {
-//            name = "OSSRH_SNAPSHOT"
-//            url = "https://s01.oss.sonatype.org/content/repositories/snapshots/"
-//            credentials {
-//                username = ossrhUsername
-//                password = ossrhPassword
-//            }
-//        }
     }
 
     signing {
