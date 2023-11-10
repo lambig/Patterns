@@ -18,7 +18,7 @@ It helps you to deal with the complex control flow by using pattern matching.
 ## Installation(gradle)
 
 ```gradle
-implementation group: 'io.github.lambig', name: 'Patterns', version: '1.3.0'
+implementation group: 'io.github.lambig', name: 'Patterns', version: '1.3.1'
 ```
 
 
