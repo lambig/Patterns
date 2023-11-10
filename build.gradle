@@ -6,7 +6,7 @@ plugins {
 
 group = 'io.github.lambig'
 archivesBaseName = 'Patterns'
-version = '1.3.0'
+version = '1.3.1'
 
 sourceCompatibility = 1.11
 
@@ -91,14 +91,6 @@ publishing {
 //        maven {
 //            name = "OSSRH"
 //            url = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
-//            credentials {
-//                username = ossrhUsername
-//                password = ossrhPassword
-//            }
-//        }
-//        maven {
-//            name = "OSSRH_SNAPSHOT"
-//            url = "https://s01.oss.sonatype.org/content/repositories/snapshots/"
 //            credentials {
 //                username = ossrhUsername
 //                password = ossrhPassword
