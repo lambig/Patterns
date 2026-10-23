@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.com/lambig/Patterns.svg?branch=main)](https://travis-ci.com/lambig/Patterns)
+[![CI](https://github.com/lambig/Patterns/actions/workflows/ci.yml/badge.svg)](https://github.com/lambig/Patterns/actions/workflows/ci.yml)
 # Patterns
 easy implementation of pattern-matcher works as a function  
 Note: this README is written through the help of ChatGPT.  
