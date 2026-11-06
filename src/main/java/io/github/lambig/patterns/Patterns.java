@@ -11,33 +11,50 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 import lombok.NonNull;
-import lombok.experimental.StandardException;
 import static io.github.lambig.tuplite._2.Tuple2._2mapWith;
 import static io.github.lambig.tuplite._2.Tuple2.tuple;
 import static java.util.stream.Collectors.toList;
 
 /**
- * 疑似パターンマッチ定義クラス
- * パターンは定義順に評価します。
+ * 入力に最初に一致する条件の結果を返すFunction。
  *
- * @param <K> キー型
- * @param <V> 処理結果の戻り型
+ * <p>条件の並び順が優先順位です。分類名や料金など、入力に応じたひとつの結果を求める場合に使えます。
+ * {@link #get(Object)}は値が得られる入力に、{@link #getOptionally(Object)}は
+ * 一致する条件や値がない入力も含めて扱う場合に使います。
+ *
+ * <p>作成後に元のリストや配列の要素を入れ替えても、条件と関数の組合せ・順序は保たれます。
+ * 条件・関数が参照する状態は共有され、入力がnullの場合の結果もそれらの定義によります。
+ * 条件や関数の例外は呼出元へ伝わり、その入力に対する処理はそこで終了します。
+ *
+ * @param <K> 入力の型
+ * @param <V> 結果の型
  */
 public class Patterns<K, V> implements Function<K, V> {
 
     private final List<Tuple2<Predicate<K>, Function<K, V>>> mappings;
 
+    /**
+     * 指定順を優先順位として、最初に一致する条件の結果を返す関数を作ります。
+     *
+     * <p>元のリストの変更にかかわらず、作成時の組合せ・順序を保持します。空の指定ではすべての入力が未一致となります。
+     *
+     * @param patterns 条件と結果を求める関数の組。各組とその要素は非null
+     * @throws NullPointerException patterns自体がnullの場合
+     */
     public Patterns(List<Tuple2<Predicate<K>, Function<K, V>>> patterns) {
-        this.mappings = patterns;
+        this.mappings = new ArrayList<>(patterns);
     }
 
     /**
-     * パターンを宣言します。
+     * 指定順を優先順位として、最初に一致する条件の結果を返す関数を作ります。
      *
-     * @param patterns 宣言する各パターン
-     * @param <S>      入力型
-     * @param <O>      出力型
-     * @return パターンによるマッピング
+     * <p>元の配列の変更にかかわらず、作成時の組合せ・順序を保持します。空の指定ではすべての入力が未一致となります。
+     *
+     * @param <S> 入力の型
+     * @param <O> 結果の型
+     * @param patterns 条件と結果を求める関数の組。各組とその要素は非null
+     * @return 指定した条件と順序で入力を扱うPatterns
+     * @throws NullPointerException patterns自体がnullの場合
      */
     @SafeVarargs
     public static <S, O> Patterns<S, O> of(Tuple2<Predicate<S>, Function<S, O>>... patterns) {
@@ -45,24 +62,30 @@ public class Patterns<K, V> implements Function<K, V> {
     }
 
     /**
-     * パターンを宣言します。
+     * 指定順を優先順位として、最初に一致する条件の結果を返す関数を作ります。
      *
-     * @param patterns 宣言する各パターン
-     * @param <S>      入力型
-     * @param <O>      出力型
-     * @return パターンによるマッピング
+     * <p>元のリストの変更にかかわらず、作成時の組合せ・順序を保持します。空の指定ではすべての入力が未一致となります。
+     *
+     * @param <S> 入力の型
+     * @param <O> 結果の型
+     * @param patterns 条件と結果を求める関数の組。各組とその要素は非null
+     * @return 指定した条件と順序で入力を扱うPatterns
+     * @throws NullPointerException patterns自体がnullの場合
      */
     public static <S, O> Patterns<S, O> of(List<Tuple2<Predicate<S>, Function<S, O>>> patterns) {
         return patterns(patterns);
     }
 
     /**
-     * パターンを宣言します。
+     * 指定順を優先順位として、最初に一致する条件の結果を返す関数を作ります。
      *
-     * @param patterns 宣言する各パターン
-     * @param <S>      入力型
-     * @param <O>      出力型
-     * @return パターンによるマッピング
+     * <p>元の配列の変更にかかわらず、作成時の組合せ・順序を保持します。空の指定ではすべての入力が未一致となります。
+     *
+     * @param <S> 入力の型
+     * @param <O> 結果の型
+     * @param patterns 条件と結果を求める関数の組。各組とその要素は非null
+     * @return 指定した条件と順序で入力を扱うPatterns
+     * @throws NullPointerException patterns自体がnullの場合
      */
     @SafeVarargs
     public static <S, O> Patterns<S, O> patterns(Tuple2<Predicate<S>, Function<S, O>>... patterns) {
@@ -70,24 +93,27 @@ public class Patterns<K, V> implements Function<K, V> {
     }
 
     /**
-     * パターンを宣言します。
+     * 指定順を優先順位として、最初に一致する条件の結果を返す関数を作ります。
      *
-     * @param patterns 宣言する各パターン
-     * @param <S>      入力型
-     * @param <O>      出力型
-     * @return パターンによるマッピング
+     * <p>元のリストの変更にかかわらず、作成時の組合せ・順序を保持します。空の指定ではすべての入力が未一致となります。
+     *
+     * @param <S> 入力の型
+     * @param <O> 結果の型
+     * @param patterns 条件と結果を求める関数の組。各組とその要素は非null
+     * @return 指定した条件と順序で入力を扱うPatterns
+     * @throws NullPointerException patterns自体がnullの場合
      */
     public static <S, O> Patterns<S, O> patterns(List<Tuple2<Predicate<S>, Function<S, O>>> patterns) {
-        return new Patterns<>(new ArrayList<>(patterns));
+        return new Patterns<>(patterns);
     }
 
     /**
-     * キーが最初に該当するパターンの返却値を取得します
+     * 入力に最初に一致する条件の結果を返します。
      *
-     * @param key キー
-     * @return 該当するパターンがあればその返却値、なければnull
-     * @throws NoSuchPatternException 該当するパターンがない場合
-     * @throws NullPointerException   該当するパターンがnullを返却した場合
+     * @param key 入力
+     * @return 一致した条件の非nullの結果
+     * @throws NoSuchPatternException 一致する条件がない場合
+     * @throws NullPointerException 一致した条件の関数がnullを返した場合
      */
     @NonNull
     public V get(K key) {
@@ -101,12 +127,12 @@ public class Patterns<K, V> implements Function<K, V> {
     }
 
     /**
-     * キーが最初に該当するパターンの返却値のをOptionalを取得します。
-     * 該当するパターンがない場合やパターンの返却値がnullの場合、
-     * Optionalは空となります。
+     * 入力に最初に一致する条件の結果をOptionalで返します。
      *
-     * @param key キー
-     * @return 該当するパターンがあればその返却値のOptional
+     * <p>最初に一致した条件の結果がnullの場合も、その入力の結果は空となります。後続の条件は対象になりません。
+     *
+     * @param key 入力
+     * @return 結果を含むOptional。条件の未一致または結果がnullなら空のOptional
      */
     @NonNull
     public Optional<V> getOptionally(K key) {
@@ -117,135 +143,149 @@ public class Patterns<K, V> implements Function<K, V> {
     }
 
     /**
-     * キーを、値の代わりに「値のOptional」にmapするFunctionを返します。
+     * 入力に対する結果の有無をOptionalで返す関数を返します。
      *
-     * @return このPatternでOptionallyにmapするFunction
+     * <p>最初に一致した条件の結果がnullの場合も、その入力の結果は空となります。後続の条件は対象になりません。
+     *
+     * @return 結果をOptionalに包む関数。条件の未一致または結果がnullなら空のOptional
      */
     public Function<K, Optional<V>> optional() {
         return this::getOptionally;
     }
 
-
     /**
-     * キーを値またはデフォルト値にmapするFunctionを返します。
+     * 条件の未一致または結果がnullの入力に、既定値を返す関数を返します。
      *
-     * @param defaultValue デフォルト値
-     * @return このPatternでデフォルト値付きでmapするFunction
+     * @param defaultValue 結果が空の場合の値。nullも指定可能
+     * @return 結果があればその値、空なら既定値を返す関数
      */
     public Function<K, V> orElse(V defaultValue) {
         return this.optional().andThen(optional -> optional.orElse(defaultValue));
     }
 
     /**
-     * キーを値またはデフォルト値にmapするFunctionを返します。
+     * 条件の未一致または結果がnullの入力に、Supplierから得た値を返す関数を返します。
      *
-     * @param defaultValueSupplier デフォルト値のSupplier
-     * @return このPatternでデフォルト値付きでmapするFunction
+     * <p>Supplierは結果が空の入力ごとに呼ばれ、その結果がnullの場合はnullを返します。
+     *
+     * @param defaultValueSupplier 結果が空の場合に値を提供するSupplier
+     * @return 結果があればその値、空ならSupplierの結果を返す関数
      */
     public Function<K, V> orElseGet(Supplier<V> defaultValueSupplier) {
         return this.optional().andThen(optional -> optional.orElseGet(defaultValueSupplier));
     }
 
     /**
-     * キーを値にmapし、キーが未設定の場合例外を送出するFunctionを返します。
+     * 条件の未一致または結果がnullの入力に、指定した例外を送出する関数を返します。
      *
-     * @param exceptionSupplier 指定例外のSupplier
-     * @return このPatternでmapするFunction Functionはキーが未設定の場合指定例外を送出する
+     * @param exceptionSupplier 結果が空の場合に送出する例外を提供するSupplier
+     * @return 結果を返し、空なら指定した例外を送出する関数
      */
     public Function<K, V> orElseThrow(Supplier<RuntimeException> exceptionSupplier) {
         return this.optional().andThen(optional -> optional.orElseThrow(exceptionSupplier));
     }
 
+    /**
+     * 入力に最初に一致する条件の結果を返します。
+     *
+     * @param k 入力
+     * @return 一致した条件の非nullの結果
+     * @throws NoSuchPatternException 一致する条件がない場合
+     * @throws NullPointerException 一致した条件の関数がnullを返した場合
+     */
     @Override
     public V apply(K k) {
         return this.get(k);
     }
 
     /**
-     * キーがwhenを満たした場合に返却する値を指定することで
-     * その値を返却する関数を返却します。
-     * 関数でなく返却値を直接設定できます。
+     * 指定した値を結果とする関数を返します。
      *
-     * @param value 返却する値
-     * @param <S>   キー型
-     * @param <O>   値型
-     * @return パターンに設定する返却関数(固定値返却)
+     * @param <S> 入力の型
+     * @param <O> 結果の型
+     * @param value 結果の値。nullも指定可能
+     * @return どの入力にもvalueを返す関数
      */
     public static <S, O> Function<S, O> then(O value) {
         return anything -> value;
     }
 
     /**
-     * キーがwhenを満たした場合に値を返却するsupplierを指定することで
-     * 入力値を無視してその値を返却する関数を返却します。
+     * Supplierが提供する値を結果とする関数を返します。
      *
-     * @param supplier 返却する値のsupplier
-     * @param <S>      キー型
-     * @param <O>      値型
-     * @return パターンに設定する返却関数
+     * <p>whenの結果に指定すると、その条件が選ばれるたびにSupplierが呼ばれます。
+     *
+     * @param <S> 入力の型
+     * @param <O> 結果の型
+     * @param supplier 結果を提供するSupplier
+     * @return 入力ごとにSupplierから結果を得る関数
      */
     public static <S, O> Function<S, O> thenSupply(Supplier<? extends O> supplier) {
         return anything -> supplier.get();
     }
 
     /**
-     * キーがwhenを満たした場合にキーに適用して返却する関数を明示します。
-     * (実はthenApplyを書かなくても直接whenの第2引数に関数を指定すれば動きます
+     * 入力を指定した関数で変換した結果を返す関数を返します。
      *
-     * @param function 適用する関数
-     * @param <S>      キー型
-     * @param <O>      関数の戻り型
-     * @return パターンに設定する返却関数
+     * @param <S> 入力の型
+     * @param <O> 結果の型
+     * @param function 入力から結果を求める関数
+     * @return functionと同じ結果を返す関数
+     * @throws NullPointerException functionがnullの場合
      */
     public static <S, O> Function<S, O> thenApply(Function<? super S, ? extends O> function) {
         return function::apply;
     }
 
     /**
-     * パターンを定義します。
+     * 条件と、一致した入力から結果を求める関数をひとつの規則として返します。
      *
-     * @param when      キーがこのパターンに該当する条件
-     * @param thenApply キーがこのパターンに該当する場合、キーに適用する関数
-     * @param <S>       キー型
-     * @param <O>       関数の戻り型
-     * @return パターン
+     * @param <S> 入力の型
+     * @param <O> 結果の型
+     * @param when この規則に該当する入力の条件
+     * @param thenApply 一致した入力に適用する関数
+     * @return 第1要素が条件、第2要素が関数のTuple2
+     * @throws NullPointerException 条件または関数がnullの場合
      */
     public static <S, O> Tuple2<Predicate<S>, Function<S, O>> when(Predicate<? super S> when, Function<? super S, ? extends O> thenApply) {
         return tuple(when::test, thenApply::apply);
     }
 
     /**
-     * 引数と等価であることをwhenと定義します。
+     * 入力が比較対象と等しいかを表す述語を返します。
      *
-     * @param target キーとの比較対象
-     * @param <S>    キー型
-     * @return 等価判定
+     * @param <S> 入力の型
+     * @param target 比較対象。nullも指定可能
+     * @return Objects.equalsで入力とtargetが等しい場合にtrueとなる述語
      */
     public static <S> Predicate<S> equalsTo(S target) {
         return s -> Objects.equals(s, target);
     }
 
     /**
-     * あらゆるキーに該当するパターンを返却します。
-     * デフォルト値の設定に有用です。
+     * すべての入力に一致する既定の規則を返します。
      *
-     * @param thenApply キーがこのパターンに該当する場合、キーに適用する関数
-     * @param <S>キー型
-     * @param <O>       関数の戻り型
-     * @return デフォルトパターン
+     * <p>先行する条件がすべて未一致だった入力を扱うには、最後の規則として指定します。
+     *
+     * @param <S> 入力の型
+     * @param <O> 結果の型
+     * @param thenApply 既定の結果を求める関数
+     * @return 常に一致する条件と関数の組
+     * @throws NullPointerException thenApplyがnullの場合
      */
     public static <S, O> Tuple2<Predicate<S>, Function<S, O>> orElse(Function<? super S, ? extends O> thenApply) {
         return tuple(anything -> true, thenApply::apply);
     }
 
     /**
-     * あらゆるキーに対し例外を送出させます。
-     * 想定外パターンの対応に有用です。
+     * すべての入力に一致し、その入力から作った例外を送出する規則を返します。
      *
-     * @param thenApply キーがこのパターンに該当する場合、キーに適用して例外を生成する関数
-     * @param <S>キー型
-     * @param <O>       関数の戻り型
-     * @return 例外処理送出処理
+     * <p>最後の規則として指定すると、先行する条件がすべて未一致だった入力を例外として報告できます。
+     *
+     * @param <S> 入力の型
+     * @param <O> 結果の型
+     * @param thenApply 入力に応じた例外を作る関数
+     * @return 常に一致する条件と例外を送出する処理の組
      */
     public static <S, O> Tuple2<Predicate<S>, Function<S, O>> orElseThrow(Function<? super S, RuntimeException> thenApply) {
         return tuple(anything -> true, input -> {
@@ -254,31 +294,37 @@ public class Patterns<K, V> implements Function<K, V> {
     }
 
     /**
-     * クラスによるパターンマッチを定義します。
+     * 指定した型のインスタンスに一致する規則を返します。
      *
-     * @param clazz     キーがこのパターンに該当する条件となるクラス
-     * @param thenApply キーがこのパターンに該当する場合、clazzクラスにキャストしたキーに適用する関数
-     * @param <S>       キー型
-     * @param <O>       関数の戻り型
-     * @return パターン
+     * <p>入力がnullの場合は未一致となります。
+     *
+     * @param <S> 入力の型
+     * @param <T> 条件が対象とする型
+     * @param <O> 結果の型
+     * @param clazz 一致する型。サブクラス・実装クラスのインスタンスも対象
+     * @param thenApply 型Tの入力に適用する関数
+     * @return 型の条件と関数の組
+     * @throws NullPointerException clazzがnullの場合
      */
     public static <S, T extends S, O> Tuple2<Predicate<S>, Function<S, O>> whenMatch(Class<T> clazz, Function<? super T, ? extends O> thenApply) {
         return tuple(clazz::isInstance, instance -> thenApply.apply(clazz.cast(instance)));
     }
 
     /**
-     * クラスによるパターンマッチを定義します。当該クラスのインスタンスとしたうえで満たすべき述語を定義できます。
+     * 指定した型のインスタンスで、追加の条件も満たす入力に一致する規則を返します。
      *
-     * @param clazz     キーがこのパターンに該当する条件となるクラス
-     * @param when      上記クラスかつ満たすべき条件
-     * @param thenApply キーがこのパターンに該当する場合、clazzクラスにキャストしたキーに適用する関数
-     * @param <S>       キー型
-     * @param <O>       関数の戻り型
-     * @return パターン
+     * <p>入力がnullの場合は未一致となります。追加の条件は型が一致した入力だけを受け取ります。
+     *
+     * @param <S> 入力の型
+     * @param <T> 条件が対象とする型
+     * @param <O> 結果の型
+     * @param clazz 一致する型。サブクラス・実装クラスのインスタンスも対象
+     * @param when 型が一致した入力に求める追加の条件
+     * @param thenApply 型Tの入力に適用する関数
+     * @return 型の条件と関数の組
      */
     public static <S, T extends S, O> Tuple2<Predicate<S>, Function<S, O>> whenMatch(Class<T> clazz, Predicate<? super T> when, Function<? super T, ? extends O> thenApply) {
         return tuple(key -> clazz.isInstance(key) && when.test(clazz.cast(key)), instance -> thenApply.apply(clazz.cast(instance)));
     }
 
 }
-

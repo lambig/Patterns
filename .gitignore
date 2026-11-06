@@ -26,3 +26,5 @@ hs_err_pid*
 build/
 .idea/
 gradle.properties
+# Maven example output
+example/target/
