@@ -9,9 +9,7 @@
 
 ## 導入
 
-Java 11以上が対象です。このブランチは1.3.2の公開候補です。
-Maven Centralへの公開後は、以下の依存宣言で利用できます。
-候補版を試す手順は[開発・検証手順](DEVELOPING.md)にあります。
+Java 11以上が対象です。Maven Centralで公開されている1.3.2を、以下の依存宣言で利用できます。
 
 Gradle:
 
@@ -154,5 +152,6 @@ public class RoutingExample {
 
 - [独立したMaven／Gradleプロジェクト](example/)は、分類、型条件、処理の振り分けと`Tuple2`を含むAPIを利用します。
 - `./gradlew javadoc`で生成するAPI文書は`build/docs/javadoc/index.html`から参照できます。
+- [1.3.2のJavadoc JAR](https://repo.maven.apache.org/maven2/io/github/lambig/Patterns/1.3.2/Patterns-1.3.2-javadoc.jar)を展開すると、`index.html`から公開版のAPI文書を参照できます。
 - 公開物には同じ版の`Patterns-1.3.2-sources.jar`と`Patterns-1.3.2-javadoc.jar`が含まれます。
 - [開発・検証手順](DEVELOPING.md)に候補版・公開版の導入確認と公開用bundleの作成手順を記載しています。

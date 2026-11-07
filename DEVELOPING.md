@@ -31,7 +31,7 @@ java -cp "example/target/classes:$(cat example/target/runtime-classpath.txt)" ex
 classification=large; fallback=unknown; events=[large:12, other:0]; tuple-api=OK
 ```
 
-Maven Centralへの公開後は、次のコマンドで公開された1.3.2を新しいキャッシュへ取得し、
+次のコマンドで、Maven Centralの1.3.2を新しいキャッシュへ取得し、
 同じ導入例とREADMEのプログラムを確認できます。
 
 ```sh
