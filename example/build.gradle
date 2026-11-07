@@ -1,0 +1,36 @@
+plugins { id 'java' }
+
+repositories {
+    if (providers.gradleProperty('candidateRepository').isPresent()) {
+        exclusiveContent {
+            forRepository {
+                maven {
+                    url = uri(providers.gradleProperty('candidateRepository').get())
+                }
+            }
+            filter { includeModule('io.github.lambig', 'Patterns') }
+        }
+    }
+    mavenCentral()
+}
+dependencies {
+    implementation "io.github.lambig:Patterns:${providers.gradleProperty('libraryVersion').getOrElse('1.3.2')}"
+}
+tasks.withType(JavaCompile).configureEach {
+    options.release = 11
+    options.encoding = 'UTF-8'
+}
+tasks.register('runExample', JavaExec) {
+    dependsOn 'classes'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'example.PatternExample'
+    if (providers.environmentVariable('TEST_JAVA_HOME').isPresent()) {
+        executable = providers.environmentVariable('TEST_JAVA_HOME').get() + '/bin/java'
+    }
+    doFirst {
+        def jars = configurations.runtimeClasspath.files
+        if (jars*.name.sort() != ["Patterns-${providers.gradleProperty('libraryVersion').getOrElse('1.3.2')}.jar".toString(), 'Tuplite-1.0.1.jar', 'functional-interface-extension-1.1.3.jar'].sort()) {
+            throw new GradleException("Unexpected runtime dependencies: ${jars*.name}")
+        }
+    }
+}
